@@ -135,3 +135,10 @@ Refer below sample
   }
 }
 ```
+
+
+
+1) collegeController line : 48-50 what if we give isDeleted: "" or isDeleted: "sknfkj" in postMan.
+2) agr kisicollege ka isDelted true hai or phir se vo college register krna chah rha hai to kya krna pdega.
+3) readMe line:26
+4) agr link glt bhi hai to bhi vo add kr de rha hai database me 

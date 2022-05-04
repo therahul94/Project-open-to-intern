@@ -17,7 +17,6 @@ const internSchema = new mongoose.Schema(
       type: String,
       required: true,
       lowercase: true,
-      //     valid email,
       unique: true,
       trim: true
 
@@ -27,7 +26,6 @@ const internSchema = new mongoose.Schema(
 
       type: String,
       required: true,
-      // valid mobile number,
       unique: true,
       trim: true
 
@@ -36,7 +34,8 @@ const internSchema = new mongoose.Schema(
     collegeId: {
 
       type: ObjectId,
-      refs: collegeCollection
+      refs: 'collegeCollection',
+      trim: true
 
     },
 
