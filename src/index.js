@@ -8,7 +8,7 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
 mongoose.connect(
-    "", 
+    "mongodb+srv://rahul94:efBR8Rc1hAQRsnZM@cluster0.ax9zh.mongodb.net/groupXDatabase?retryWrites=true&w=majority", 
     {
         useNewUrlParser: true
     }
