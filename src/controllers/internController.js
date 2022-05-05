@@ -55,10 +55,9 @@ const createIntern = async function(req, res){
             return res.status(400).send({status: false, msg: "College name is required"})
         }
 
-        // console.log(name, mobile, email, collegeName)
 
         const isAlreadyIntern = await internModel.findOne({
-            $or: [{name:name}, {mobile: mobile}, {email: email}]
+            $or: [{mobile: mobile}, {email: email}]
         })
         if(isAlreadyIntern){
             return res.status(400).send({status: false, msg: "Cannot add the intern with details."})
@@ -66,7 +65,7 @@ const createIntern = async function(req, res){
 
         const collegeIdDocument = await collegeModel.findOne({name: collegeName})
         if( !collegeIdDocument ) {
-            return res.status(400).send({status: false, msg: "There is no entries with provided college name."})
+            return res.status(400).send({status: false, msg: "There is no entries with the provided college name."})
         }
 
         const collegeId = collegeIdDocument._id
