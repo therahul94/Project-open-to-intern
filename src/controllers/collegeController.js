@@ -3,18 +3,21 @@ const collegeModel = require('../models/collegeModel')
 const internModel = require('../models/internModel')
 
 
-function isValid(data){
-    if(typeof data === undefined || data === null) return false
-    if(typeof data === 'string' && data.trim().length === 0) return false
-    return true
-}
+// function isValid(data){
+//     if(typeof data === undefined || data === null) return false
+//     if(typeof data === 'string' && data.trim().length === 0) return false
+//     return true
+// }
 
 function isValidRequestBody(requestBody){
     return Object.keys(requestBody).length > 0
 }
 
 function isValidLink(link){
-    return /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/gi.test(link)
+    if (link.trim().match( /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/ )){
+        return true
+    }
+    return false
 }
 
 const createCollege = async function(req, res){
@@ -28,24 +31,24 @@ const createCollege = async function(req, res){
 
         const {name, fullName, logoLink, isDeleted} = collegeDetails
 
-        if( !isValid(name) ){
-            return res.status(400).send({status: false, msg: "Name is required"})
+        if( !name ) { return res.status(400).send({status: false, msg: "Name is required"}) }
+        if( !fullName ) { return res.status(400).send({status: false, msg: "fullName is required"}) }
+        if( !logoLink ) { return res.status(400).send({status: false, msg: "logoLink is required"}) }
+
+        if( !(name.trim().match(/^[a-zA-Z]+$/)) ){
+            return res.status(400).send({status: false, msg: `${name} is INVALID name`})
         }
-        
-        if( !isValid(fullName) ){
-            return res.status(400).send({status: false, msg: "fullName is required"})
-        }
-        if( !isValid(logoLink) ){
-            return res.status(400).send({status: false, msg: "logoLink is required"})
+        if( !(fullName.trim().match(/^[a-zA-Z,\-.\s]*$/)) ){
+            return res.status(400).send({status: false, msg: `${fullName} is INVALID fullname`})
         }
 
         if( !isValidLink(logoLink) ){
             return res.status(400).send({status: false, msg: "Not a link"})
         }
 
-        if( isDeleted === true || !isValid(isDeleted)  || typeof isDeleted === 'string' && isDeleted.trim().length > 0){
-            req.body.isDeleted = false
-        }
+        // if( isDeleted === true || !isValid(isDeleted)  || typeof isDeleted === 'string' && isDeleted.trim().length > 0){
+        //     req.body.isDeleted = false
+        // }
 
         const isNamePresent = await collegeModel.findOne( { $or:[{name: name}, {fullName: fullName}, {logoLink: logoLink}] } )
         if(isNamePresent){
@@ -63,15 +66,18 @@ const createCollege = async function(req, res){
 
 const getInterns = async function(req, res){
     try{
+        
         const collegeName= req.query.collegeName
 
-        if( !isValid(collegeName) ){
-            return res.status(400).send({status: false, msg: "please enter the college name"})
+        if( !collegeName ) { return res.status(400).send({status: false, msg: "please enter the college name"}) }
+
+        if( !( collegeName.trim().match(/^[a-zA-Z]+$/) ) ){
+            return res.status(400).send({status: false, msg: `${collegeName} is INVALID collegeName.`})
         }
 
         const isCollegePresent = await collegeModel.findOne({name: collegeName})
         if(!isCollegePresent || (isCollegePresent.isDeleted === true)){
-            return res.status(400).send({status: false, msg: "No college found"})
+            return res.status(400).send({status: false, msg:  `${collegeName} college not found`})
         }
 
         const collegeId = isCollegePresent._id.toString()
@@ -87,7 +93,6 @@ const getInterns = async function(req, res){
         internListWithCollege.interests = internData
 
         return res.status(200).send({status: true, data: internListWithCollege})
-
 
     }
     catch(err){
