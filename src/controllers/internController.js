@@ -21,7 +21,7 @@ function isValidEmail(email){
 }
 
 function isValidMobileNo(mobile){
-    if( mobile.trim().match( /^([+]\d{2})?\d{10}$/ ) ){
+    if( mobile.trim().match( /^([+]\d{2})?\d{10}$/ ) ){      // /^[1-9]{1}[0-9]{6,9}$/      
         return true
     }
     return false
