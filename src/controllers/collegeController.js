@@ -46,9 +46,16 @@ const createCollege = async function(req, res){
             return res.status(400).send({status: false, msg: "Not a link"})
         }
 
-        // if( isDeleted === true || !isValid(isDeleted)  || typeof isDeleted === 'string' && isDeleted.trim().length > 0){
-        //     req.body.isDeleted = false
-        // }
+        //Line: 49-54: We are checking if someone doesnot give the isDeleted, it means undefined then bydefalut it will be store as false
+        // if isDeleted is empty string then it will show the isDeleted field is empty
+        //In line56 (typeof isDeleted !== "boolean") means: isDeleted should not be boolean then only it will show the ERROR, we are doing this because if someone gives the isDeleted: false or true manually then we have to store the value in the DB.
+
+        if( (typeof isDeleted === 'string' && isDeleted.trim().length === 0) || isDeleted === null ){
+            return res.status(400).send({status: false, msg: "isDeleted field is empty"})
+        }
+        if( isDeleted !== undefined && (typeof isDeleted !== "boolean")){ 
+            return res.status(400).send({status: false, msg: "Please put correct value"})
+        }
 
         const isNamePresent = await collegeModel.findOne( { $or:[{name: name}, {fullName: fullName}, {logoLink: logoLink}] } )
         if(isNamePresent){
